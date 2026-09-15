@@ -1,352 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1">
-
-<title>CEZOO UPI Test</title>
-
-<style>
-*{
-  box-sizing:border-box;
-}
-
-body{
-  margin:0;
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:#f7f7f8;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-}
-
-.payment-box{
-  width:calc(100% - 32px);
-  max-width:420px;
-  background:#fff;
-  border-radius:22px;
-  padding:24px 18px;
-  box-shadow:0 8px 30px rgba(0,0,0,.08);
-}
-
-.logo{
-  text-align:center;
-  font-size:28px;
-  font-weight:900;
-  margin-bottom:5px;
-}
-
-.subtitle{
-  text-align:center;
-  color:#777;
-  font-size:13px;
-  margin-bottom:25px;
-}
-
-.amount-label{
-  text-align:center;
-  font-size:13px;
-  color:#777;
-}
-
-.amount{
-  text-align:center;
-  font-size:38px;
-  font-weight:800;
-  margin:4px 0 28px;
-}
-
-.title{
-  font-size:14px;
-  font-weight:700;
-  margin-bottom:12px;
-}
-
-.pay-btn{
-  width:100%;
-  height:58px;
-  margin-bottom:12px;
-  border:1px solid #e7e7e7;
-  border-radius:14px;
-  background:#fff;
-  display:flex;
-  align-items:center;
-  padding:0 17px;
-  font-size:16px;
-  font-weight:700;
-  cursor:pointer;
-}
-
-.icon{
-  width:38px;
-  height:38px;
-  border-radius:10px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  margin-right:14px;
-  font-size:17px;
-  font-weight:900;
-  background:#f3f3f3;
-}
-
-.arrow{
-  margin-left:auto;
-  color:#999;
-  font-size:20px;
-}
-
-.note{
-  margin-top:14px;
-  text-align:center;
-  color:#999;
-  font-size:11px;
-  line-height:1.5;
-}
-
-#error{
-  display:none;
-  margin-top:10px;
-  padding:10px;
-  border-radius:10px;
-  background:#fff2f2;
-  font-size:12px;
-  text-align:center;
-}
-</style>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UPI Test</title>
 </head>
 
-<body>
+<body style="text-align:center;padding-top:100px;font-family:Arial">
 
-<div class="payment-box">
+<h2>CEZOO UPI Test</h2>
+<h1>₹1.00</h1>
 
-  <div class="logo">CEZOO</div>
-  <div class="subtitle">UPI Intent Test</div>
-
-  <div class="amount-label">Amount to pay</div>
-  <div class="amount">₹1.00</div>
-
-  <div class="title">Choose UPI App</div>
-
-  <button class="pay-btn" onclick="pay('phonepe')">
-    <div class="icon">P</div>
-    PhonePe
-    <span class="arrow">›</span>
-  </button>
-
-  <button class="pay-btn" onclick="pay('gpay')">
-    <div class="icon">G</div>
-    Google Pay
-    <span class="arrow">›</span>
-  </button>
-
-  <button class="pay-btn" onclick="pay('paytm')">
-    <div class="icon">₹</div>
-    Paytm
-    <span class="arrow">›</span>
-  </button>
-
-  <div id="error"></div>
-
-  <div class="note">
-    ₹1 test only. Do not complete the payment to this test recipient.
-  </div>
-
-</div>
-
+<button onclick="payUPI()"
+style="padding:16px 35px;font-size:18px;border:0;border-radius:12px;background:#111;color:#fff">
+  Pay with UPI
+</button>
 
 <script>
+function payUPI() {
 
-/* ==============================
-   TEST PAYMENT DETAILS
-================================ */
+  const upiId = "boim-867411230473@boi";
+  const name = "VEERABHADRARAO KASAGANI";
+  const amount = "1.00";
+  const ref = "CEZOO" + Date.now();
 
-const UPI_ID = "boim-867411230473@boi";
-
-const PAYEE_NAME = "VEERABHADRARAO KASAGANI";
-
-const AMOUNT = "1.00";
-
-
-/* ==============================
-   CREATE UPI URI
-================================ */
-
-function createUPIUri(){
-
-  const orderId =
-    "CEZOO_TEST_" + Date.now();
-
-  return (
+  const url =
     "upi://pay" +
-    "?pa=" + encodeURIComponent(UPI_ID) +
-    "&pn=" + encodeURIComponent(PAYEE_NAME) +
-    "&am=" + encodeURIComponent(AMOUNT) +
+    "?pa=" + encodeURIComponent(upiId) +
+    "&pn=" + encodeURIComponent(name) +
+    "&am=" + encodeURIComponent(amount) +
     "&cu=INR" +
-    "&tr=" + encodeURIComponent(orderId) +
-    "&tn=" + encodeURIComponent("CEZOO UPI Test")
-  );
+    "&tr=" + encodeURIComponent(ref) +
+    "&tn=" + encodeURIComponent("CEZOO Test");
+
+  window.location.href = url;
 }
-
-
-/* ==============================
-   DETECT DEVICE
-================================ */
-
-function isAndroid(){
-  return /Android/i.test(navigator.userAgent);
-}
-
-function isIOS(){
-  return /iPhone|iPad|iPod/i.test(navigator.userAgent);
-}
-
-
-/* ==============================
-   PAYMENT
-================================ */
-
-function pay(app){
-
-  const upiUri = createUPIUri();
-
-  hideError();
-
-  /*
-   ===========================
-   ANDROID
-   ===========================
-  */
-
-  if(isAndroid()){
-
-    let packageName = "";
-
-    if(app === "phonepe"){
-      packageName = "com.phonepe.app";
-    }
-
-    if(app === "gpay"){
-      packageName = "com.google.android.apps.nbu.paisa.user";
-    }
-
-    if(app === "paytm"){
-      packageName = "net.one97.paytm";
-    }
-
-
-    const withoutScheme =
-      upiUri.replace("upi://", "");
-
-
-    const intent =
-      "intent://" +
-      withoutScheme +
-      "#Intent;" +
-      "scheme=upi;" +
-      "package=" + packageName + ";" +
-      "end";
-
-
-    window.location.href = intent;
-
-    return;
-  }
-
-
-  /*
-   ===========================
-   iPHONE / iPAD
-   ===========================
-
-   iOS does not provide Android
-   package intents from a webpage.
-
-   Try app-specific URL handling.
-  */
-
-  if(isIOS()){
-
-    let url = "";
-
-    const query =
-      upiUri.substring(
-        upiUri.indexOf("?")
-      );
-
-
-    if(app === "phonepe"){
-
-      url =
-        "phonepe://pay" + query;
-
-    }
-
-
-    else if(app === "gpay"){
-
-      url =
-        "gpay://upi/pay" + query;
-
-    }
-
-
-    else if(app === "paytm"){
-
-      url =
-        "paytmmp://pay" + query;
-
-    }
-
-
-    if(url){
-
-      window.location.href = url;
-
-      return;
-
-    }
-
-  }
-
-
-  /*
-   ===========================
-   FALLBACK
-   ===========================
-  */
-
-  showError(
-    "This UPI app could not be opened on this device."
-  );
-
-}
-
-
-/* ==============================
-   ERROR
-================================ */
-
-function showError(message){
-
-  const box =
-    document.getElementById("error");
-
-  box.innerText = message;
-  box.style.display = "block";
-
-}
-
-
-function hideError(){
-
-  document.getElementById("error")
-    .style.display = "none";
-
-}
-
 </script>
 
 </body>
