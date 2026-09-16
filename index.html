@@ -1,39 +1,331 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>UPI Test</title>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<title>CEZOO UPI Test</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#f5f6f8;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+}
+
+.card{
+  width:calc(100% - 30px);
+  max-width:420px;
+  background:#fff;
+  border-radius:22px;
+  padding:25px 18px;
+  box-shadow:0 8px 30px rgba(0,0,0,.08);
+}
+
+.brand{
+  text-align:center;
+  font-size:30px;
+  font-weight:900;
+}
+
+.sub{
+  text-align:center;
+  color:#777;
+  font-size:13px;
+  margin-top:4px;
+}
+
+.amount-label{
+  text-align:center;
+  margin-top:25px;
+  color:#777;
+  font-size:13px;
+}
+
+.amount{
+  text-align:center;
+  font-size:40px;
+  font-weight:800;
+  margin:3px 0 28px;
+}
+
+.heading{
+  font-size:14px;
+  font-weight:700;
+  margin-bottom:12px;
+}
+
+.upi-btn{
+  width:100%;
+  height:60px;
+  border:1px solid #e5e7eb;
+  background:#fff;
+  border-radius:14px;
+  margin-bottom:12px;
+  padding:0 16px;
+
+  display:flex;
+  align-items:center;
+
+  font-size:16px;
+  font-weight:700;
+
+  cursor:pointer;
+}
+
+.icon{
+  width:40px;
+  height:40px;
+  border-radius:10px;
+  background:#f3f4f6;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  margin-right:14px;
+  font-weight:900;
+}
+
+.arrow{
+  margin-left:auto;
+  color:#999;
+  font-size:22px;
+}
+
+.details{
+  margin-top:22px;
+  padding:14px;
+  background:#f8f8f8;
+  border-radius:12px;
+  font-size:12px;
+  line-height:1.7;
+  word-break:break-all;
+}
+
+.warning{
+  margin-top:15px;
+  text-align:center;
+  color:#888;
+  font-size:11px;
+}
+</style>
 </head>
 
-<body style="text-align:center;padding-top:100px;font-family:Arial">
+<body>
 
-<h2>CEZOO UPI Test</h2>
-<h1>₹1.00</h1>
+<div class="card">
 
-<button onclick="payUPI()"
-style="padding:16px 35px;font-size:18px;border:0;border-radius:12px;background:#111;color:#fff">
-  Pay with UPI
-</button>
+  <div class="brand">CEZOO</div>
+  <div class="sub">UPI Payment Test</div>
+
+  <div class="amount-label">
+    Amount
+  </div>
+
+  <div class="amount">
+    ₹1.00
+  </div>
+
+  <div class="heading">
+    Pay using UPI
+  </div>
+
+  <button class="upi-btn" onclick="openUPI('phonepe')">
+    <div class="icon">P</div>
+    PhonePe
+    <span class="arrow">›</span>
+  </button>
+
+  <button class="upi-btn" onclick="openUPI('gpay')">
+    <div class="icon">G</div>
+    Google Pay
+    <span class="arrow">›</span>
+  </button>
+
+  <button class="upi-btn" onclick="openUPI('paytm')">
+    <div class="icon">₹</div>
+    Paytm
+    <span class="arrow">›</span>
+  </button>
+
+  <button class="upi-btn" onclick="openGenericUPI()">
+    <div class="icon">UPI</div>
+    Other UPI App
+    <span class="arrow">›</span>
+  </button>
+
+  <div class="details">
+    <b>Payee:</b> CEZONAL SOLUTIONS PRIVATE LIMITED
+    <br>
+    <b>UPI:</b> cezonalsolution552531.rzp@rxaxis
+    <br>
+    <b>Test amount:</b> ₹1.00
+  </div>
+
+  <div class="warning">
+    ₹1 test transaction
+  </div>
+
+</div>
+
 
 <script>
-function payUPI() {
 
-  const upiId = "boim-867411230473@boi";
-  const name = "VEERABHADRARAO KASAGANI";
-  const amount = "1.00";
-  const ref = "CEZOO" + Date.now();
+/* =========================
+   PAYMENT CONFIG
+========================= */
 
-  const url =
-    "upi://pay" +
-    "?pa=" + encodeURIComponent(upiId) +
-    "&pn=" + encodeURIComponent(name) +
-    "&am=" + encodeURIComponent(amount) +
+const UPI_ID =
+  "cezonalsolution552531.rzp@rxaxis";
+
+const PAYEE_NAME =
+  "CEZONAL SOLUTIONS PRIVATE LIMITED";
+
+const AMOUNT = "1.00";
+
+
+/* =========================
+   CREATE UPI QUERY
+========================= */
+
+function getUPIQuery(){
+
+  const orderId =
+    "CEZOO" + Date.now();
+
+  return (
+    "pa=" + encodeURIComponent(UPI_ID) +
+    "&pn=" + encodeURIComponent(PAYEE_NAME) +
+    "&am=" + encodeURIComponent(AMOUNT) +
     "&cu=INR" +
-    "&tr=" + encodeURIComponent(ref) +
-    "&tn=" + encodeURIComponent("CEZOO Test");
-
-  window.location.href = url;
+    "&tr=" + encodeURIComponent(orderId) +
+    "&tn=" + encodeURIComponent("CEZOO Order " + orderId)
+  );
 }
+
+
+/* =========================
+   DEVICE
+========================= */
+
+function isAndroid(){
+
+  return /Android/i.test(
+    navigator.userAgent
+  );
+
+}
+
+
+/* =========================
+   OPEN SPECIFIC APP
+========================= */
+
+function openUPI(app){
+
+  const query = getUPIQuery();
+
+
+  /* ANDROID */
+
+  if(isAndroid()){
+
+    let packageName = "";
+
+    if(app === "phonepe"){
+      packageName =
+        "com.phonepe.app";
+    }
+
+    else if(app === "gpay"){
+      packageName =
+        "com.google.android.apps.nbu.paisa.user";
+    }
+
+    else if(app === "paytm"){
+      packageName =
+        "net.one97.paytm";
+    }
+
+
+    const intentURL =
+      "intent://pay?" +
+      query +
+      "#Intent;" +
+      "scheme=upi;" +
+      "package=" + packageName + ";" +
+      "end";
+
+
+    window.location.href =
+      intentURL;
+
+    return;
+  }
+
+
+  /*
+     iOS
+
+     Try app specific schemes.
+     Whether a scheme opens from a WebView
+     depends on the iOS app/WebView setup.
+  */
+
+  let appURL = "";
+
+  if(app === "phonepe"){
+
+    appURL =
+      "phonepe://pay?" + query;
+
+  }
+
+  else if(app === "gpay"){
+
+    appURL =
+      "gpay://upi/pay?" + query;
+
+  }
+
+  else if(app === "paytm"){
+
+    appURL =
+      "paytmmp://pay?" + query;
+
+  }
+
+
+  window.location.href =
+    appURL;
+
+}
+
+
+/* =========================
+   GENERIC UPI
+========================= */
+
+function openGenericUPI(){
+
+  const query =
+    getUPIQuery();
+
+  window.location.href =
+    "upi://pay?" + query;
+
+}
+
 </script>
 
 </body>
