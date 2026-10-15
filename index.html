@@ -3,8 +3,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cezonal Solutions Payment</title>
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+<title>Cezonal UPI Payment</title>
+
 <style>
 * { box-sizing: border-box; }
 
@@ -18,62 +20,107 @@ body {
 }
 
 .payment-box {
+  width: min(92%, 380px);
+  padding: 25px;
   background: white;
-  width: min(90%, 360px);
-  padding: 28px 22px;
-  border-radius: 18px;
+  border-radius: 20px;
   text-align: center;
-  box-shadow: 0 8px 30px rgba(0,0,0,.08);
+  box-shadow: 0 8px 30px #00000012;
 }
+
+h2 { margin-bottom: 5px; }
 
 .amount {
-  font-size: 42px;
-  font-weight: 700;
-  margin: 24px 0;
+  font-size: 44px;
+  font-weight: bold;
+  margin: 25px 0;
 }
 
-button {
+.pay-btn {
   width: 100%;
-  background: #5f259f;
-  color: white;
+  padding: 16px;
   border: 0;
   border-radius: 12px;
-  padding: 16px;
-  font-size: 18px;
-  font-weight: 700;
+  margin-bottom: 12px;
+  color: white;
+  font-size: 17px;
+  font-weight: bold;
   cursor: pointer;
 }
 
-p { color: #666; font-size: 13px; }
+.phonepe { background: #5f259f; }
+.gpay { background: #202124; }
+.paytm { background: #00baf2; }
+
+.note {
+  font-size: 12px;
+  color: #777;
+  line-height: 1.5;
+}
 </style>
 </head>
-<body>
 
+<body>
 <div class="payment-box">
+
   <h2>Cezonal Solutions</h2>
-  <p>Secure UPI Payment</p>
+  <p>Choose your payment app</p>
 
   <div class="amount">₹20.00</div>
 
-  <button onclick="payNow()">Pay ₹20</button>
+  <button class="pay-btn phonepe"
+    onclick="payNow('phonepe')">
+    Pay with PhonePe
+  </button>
 
-  <p>PhonePe • Google Pay • Paytm</p>
+  <button class="pay-btn gpay"
+    onclick="payNow('gpay')">
+    Pay with Google Pay
+  </button>
+
+  <button class="pay-btn paytm"
+    onclick="payNow('paytm')">
+    Pay with Paytm
+  </button>
+
+  <p id="message" class="note">
+    Complete payment in your UPI app.
+  </p>
+
 </div>
 
 <script>
-function payNow() {
+const upiId = "cezonalsolutionspvtltd@axl";
+const merchantName = "Cezonal Solutions Pvt Ltd";
+const amount = "20.00";
+
+function payNow(app) {
   const params = new URLSearchParams({
-    pa: "cezonalsolutionspvtltd@axl",
-    pn: "Cezonal Solutions Pvt Ltd",
-    am: "20.00",
+    pa: upiId,
+    pn: merchantName,
+    am: amount,
     cu: "INR",
-    tn: "Website Payment"
+    tn: "Cezonal Website Payment"
   });
 
-  window.location.href = "upi://pay?" + params.toString();
+  const upiQuery = params.toString();
+  let paymentUrl;
+
+  if (app === "phonepe") {
+    paymentUrl = "phonepe://pay?" + upiQuery;
+  } else if (app === "gpay") {
+    paymentUrl = "tez://upi/pay?" + upiQuery;
+  } else if (app === "paytm") {
+    paymentUrl = "paytmmp://pay?" + upiQuery;
+  } else {
+    return;
+  }
+
+  document.getElementById("message").textContent =
+    "Opening selected app. If nothing happens, open this page in Chrome or Safari.";
+
+  window.location.href = paymentUrl;
 }
 </script>
-
 </body>
 </html>
-
